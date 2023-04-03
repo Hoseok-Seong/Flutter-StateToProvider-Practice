@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ProviderScope(
+        child: MyApp()
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -16,24 +21,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
-
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  // 상태 관리 변수
-  int number = 1;
-
-  // 상태 관리 함수
-  void add(){
-    setState(() {
-      number = number + 1;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +32,8 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Expanded(child: HeaderPage(number)),
-            Expanded(child: BottomPage(add)),
+            Expanded(child: HeaderPage()),
+            Expanded(child: BottomPage()),
           ],
         ),
       ),
@@ -52,13 +41,25 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HeaderPage extends StatelessWidget {
-  // 전달 받는 변수
-  final int number;
-  HeaderPage(this.number, {Key? key}) : super(key: key);
+final countProvider = StateNotifierProvider<HomePageState, int>((ref) {
+  return HomePageState(0);
+});
 
+class HomePageState extends StateNotifier<int> {
+  HomePageState(int num) : super(num);
+
+  // 상태 관리 함수
+  void add(){
+    state++;
+  }
+}
+
+class HeaderPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 전달 받는 변수
+    final int number = ref.watch(countProvider);
+
     return Container(
       color: Colors.red,
       child: Align(
@@ -76,15 +77,9 @@ class HeaderPage extends StatelessWidget {
   }
 }
 
-class BottomPage extends StatelessWidget {
-
-  // Function add;
-  final add;
-
-  BottomPage(this.add, {Key? key}) : super(key: key);
-
+class BottomPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       color: Colors.blue,
       child: Align(
@@ -93,7 +88,7 @@ class BottomPage extends StatelessWidget {
               backgroundColor: Colors.red
           ),
           onPressed: (){
-            add();
+            ref.read(countProvider.notifier).add();
           },
           child: Text("증가", style: TextStyle(
             color: Colors.white,
