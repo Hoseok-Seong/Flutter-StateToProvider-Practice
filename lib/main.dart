@@ -54,23 +54,28 @@ class HomePageState extends StateNotifier<int> {
   }
 }
 
-class HeaderPage extends ConsumerWidget {
+class HeaderPage extends StatelessWidget {
+  const HeaderPage({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // 전달 받는 변수
-    final int number = ref.watch(countProvider);
+  Widget build(BuildContext context) {
+    print("나 그려짐?===================");
 
     return Container(
       color: Colors.red,
       child: Align(
-        child: Text(
-          "$number",
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 100,
-              decoration: TextDecoration.none
-          ),
+        child: Consumer(
+           builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final int num = ref.watch(countProvider);
+             return Text(
+               "$num",
+               style: TextStyle(
+                 color: Colors.white,
+                 fontWeight: FontWeight.bold,
+                 fontSize: 100,
+                 decoration: TextDecoration.none
+             ),);
+           },
         ),
       ),
     );
